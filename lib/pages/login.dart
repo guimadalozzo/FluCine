@@ -112,7 +112,7 @@ class Login extends StatelessWidget {
                                                         color: Colors.white
                                                     ),
                                                 ),
-                                                onPressed: () {/** */},
+                                                onPressed: () {/* */},
                                             ),
                                         ),
                                     ],

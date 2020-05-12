@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:controle_animal/model/Animal.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
 	@override
@@ -6,6 +8,75 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+	
+	Future<List<Animal>> _getAnimais() async {
+		Firestore db = Firestore.instance;
+		
+		QuerySnapshot querySnapshot = await db.collection("animais")
+			.getDocuments();
+		
+		List<Animal> listaAnimais = List();
+		for(DocumentSnapshot item in querySnapshot.documents) {
+			var dados = item.data;
+			
+			Animal animal = Animal(
+								dados["nome"],
+								dados["idade"],
+								dados["raca"],
+								dados["foto"]
+							);
+			
+			listaAnimais.add(animal);
+		}
+		
+		print("Quantidade de animais: "+listaAnimais.length.toString());
+		
+		return listaAnimais;
+	}
+	
+	_body() {
+		return FutureBuilder<List<Animal>>(
+			future: _getAnimais(),
+			builder: (context, snapshot) {
+				switch( snapshot.connectionState ) {
+					case ConnectionState.none : print("Conexão em estado nulo."); break;
+					case ConnectionState.waiting :
+						return Center(
+							child: Column(
+								children: <Widget>[
+									Text("Carregando animais..."),
+									CircularProgressIndicator()
+								],
+							),
+						);
+						break;
+					case ConnectionState.active : print("Conexão em estado ativo (útil em streaming."); break;
+					
+					case ConnectionState.done :
+						return ListView.builder(
+							itemCount: snapshot.data.length,
+							itemBuilder: (context, index) {
+								List<Animal> animais = snapshot.data;
+								Animal animal = animais[index];
+								
+								print(animal.foto);
+								
+								return ListTile(
+									leading: CircleAvatar(
+										backgroundImage: NetworkImage(animal.foto),
+									),
+									title: Text( animal.nome ),
+									subtitle: Text( animal.raca + ", " + animal.idade + " anos"),
+								);
+							}
+						);
+				}
+				
+				return null;
+			}
+		);
+	}
+	
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
@@ -13,68 +84,7 @@ class _HomeState extends State<Home> {
 				title: Text("Seus Pets"),
 			),
 			
-			body: Column(
-				children: <Widget>[
-					Container(
-						child: Card(
-							child: Column(
-								mainAxisSize: MainAxisSize.min,
-								children: <Widget>[
-									const ListTile(
-										leading: CircleAvatar(
-											backgroundImage: NetworkImage("https://www.petlove.com.br/images/breeds/193442/profile/original/buldogue_frances-p.jpg?1532538793"),
-										),
-										title: Text('Junior'),
-										subtitle: Text('Bulldog Francês, 6 anos.'),
-									),
-									ButtonBar(
-										children: <Widget>[
-											FlatButton(
-												child: const Text('EDITAR'),
-												onPressed: () { /* ... */ },
-											),
-											FlatButton(
-												child: const Text('CARTEIRINHA'),
-												onPressed: () { /* ... */ },
-											),
-										],
-									),
-								],
-							),
-						),
-					),
-					
-					Container(
-						child: Card(
-							child: Column(
-								mainAxisSize: MainAxisSize.min,
-								children: <Widget>[
-									const ListTile(
-										leading: CircleAvatar(
-											backgroundImage: NetworkImage("https://http2.mlstatic.com/buldogue-campeiro-filhote-macho-D_NQ_NP_876205-MLB27307359945_052018-F.jpg"),
-										),
-										title: Text('Luppi'),
-										subtitle: Text('Bulldog Campeiro, 2 anos.'),
-									),
-									ButtonBar(
-										children: <Widget>[
-											FlatButton(
-												child: const Text('EDITAR'),
-												onPressed: () { /* ... */ },
-											),
-											FlatButton(
-												child: const Text('CARTEIRINHA'),
-												onPressed: () { /* ... */ },
-											),
-										],
-									),
-								],
-							),
-						),
-					),
-				],
-			),
-			
+			body: _body(),
 			
 			bottomNavigationBar: BottomAppBar(
 				//shape: const CircularNotchedRectangle(),

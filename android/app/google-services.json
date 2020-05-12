@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "5924752811",
+    "firebase_url": "https://controlepet-a264b.firebaseio.com",
+    "project_id": "controlepet-a264b",
+    "storage_bucket": "controlepet-a264b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5924752811:android:5a02f75cc08f9a065cd6ee",
+        "android_client_info": {
+          "package_name": "com.animal.controle.madalozzo.controle_animal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "5924752811-iqdid6b3juhmtkrko0f863ebkb1324eb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.animal.controle.madalozzo.controle_animal",
+            "certificate_hash": "551958d90c72f6275faac79df23afa885f6994d1"
+          }
+        },
+        {
+          "client_id": "5924752811-jsn9ta5u4mjh599n0ams1etcr909l3rj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG43rqdVFOkRZ42EoOpR2f7vcUr92qC-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "5924752811-jsn9ta5u4mjh599n0ams1etcr909l3rj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "5924752811-oqcmopuiskc6f106be1mglonffdp989r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.madaladev.evetsis"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
