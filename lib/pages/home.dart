@@ -8,38 +8,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-	
-	Future<List<Animal>> _getAnimais() async {
-		Firestore db = Firestore.instance;
-		
-		QuerySnapshot querySnapshot = await db.collection("animais")
-			.getDocuments();
-		
-		List<Animal> listaAnimais = List();
-		for(DocumentSnapshot item in querySnapshot.documents) {
-			var dados = item.data;
-			
-			Animal animal = Animal(
-								dados["nome"],
-								dados["idade"],
-								dados["raca"],
-								dados["foto"]
-							);
-			
-			listaAnimais.add(animal);
-		}
-		
-		print("Quantidade de animais: "+listaAnimais.length.toString());
-		
-		return listaAnimais;
-	}
+	Firestore db = Firestore.instance;
 	
 	_body() {
-		return FutureBuilder<List<Animal>>(
-			future: _getAnimais(),
+		return StreamBuilder(
+			stream: db.collection("animais").snapshots(),
+// ignore: missing_return
 			builder: (context, snapshot) {
 				switch( snapshot.connectionState ) {
-					case ConnectionState.none : print("Conexão em estado nulo."); break;
+					case ConnectionState.none :
+					case ConnectionState.active :
+					
 					case ConnectionState.waiting :
 						return Center(
 							child: Column(
@@ -50,31 +29,46 @@ class _HomeState extends State<Home> {
 							),
 						);
 						break;
-					case ConnectionState.active : print("Conexão em estado ativo (útil em streaming."); break;
-					
+						
 					case ConnectionState.done :
-						return ListView.builder(
-							itemCount: snapshot.data.length,
-							itemBuilder: (context, index) {
-								List<Animal> animais = snapshot.data;
-								Animal animal = animais[index];
-								
-								print(animal.foto);
-								
-								return ListTile(
-									leading: CircleAvatar(
-										backgroundImage: NetworkImage(animal.foto),
-									),
-									title: Text( animal.nome ),
-									subtitle: Text( animal.raca + ", " + animal.idade + " anos"),
-								);
-							}
-						);
+						QuerySnapshot querySnapshot = snapshot.data;
+						
+						if(snapshot.hasError) {
+							return Container(
+								child: Text("Ocorreram erros ao carregar os dados!"),
+							);
+						}
+						else {
+							print("DADOS CARREGADOS: "+snapshot.data.toString());
+							
+							return Container(
+								child: ListView.builder(
+									itemCount: querySnapshot.documents.length,
+									itemBuilder: (context, index) {
+										
+										//recupera os animais
+										List<DocumentSnapshot> animais = querySnapshot.documents.toList();
+										DocumentSnapshot dados = animais[index];
+										
+										Animal animal = Animal(dados["nome"], dados["idade"], dados["raca"], dados["foto"]);
+										
+										return ListTile(
+											leading: CircleAvatar(
+												backgroundImage: NetworkImage(animal.foto),
+											),
+											title: Text( animal.nome ),
+											subtitle: Text( animal.raca + ", " + animal.idade + " anos."),
+										);
+									}
+								)
+							);
+						}
 				}
 				
-				return null;
 			}
+		
 		);
+		
 	}
 	
 	@override
@@ -135,4 +129,3 @@ class _HomeState extends State<Home> {
 		);
 	}
 }
-
