@@ -21,17 +21,6 @@ class _HomeState extends State<Home> {
 					case ConnectionState.none :
 					case ConnectionState.done :
 						
-						print("ACTIVE");
-						return Center(
-							child: Column(
-								children: <Widget>[
-									Text("Activing..."),
-									CircularProgressIndicator()
-								],
-							),
-						);
-						break;
-					
 					case ConnectionState.waiting :
 						print("WAINTING");
 						return Center(
