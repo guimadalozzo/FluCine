@@ -1,3 +1,5 @@
+import 'package:controle_animal/components/menu_inferior.dart';
+import 'package:controle_animal/pages/novo_pet.dart';
 import 'package:flutter/material.dart';
 import 'package:controle_animal/model/Animal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,9 +19,21 @@ class _HomeState extends State<Home> {
 			builder: (context, snapshot) {
 				switch( snapshot.connectionState ) {
 					case ConnectionState.none :
-					case ConnectionState.active :
+					case ConnectionState.done :
+						
+						print("ACTIVE");
+						return Center(
+							child: Column(
+								children: <Widget>[
+									Text("Activing..."),
+									CircularProgressIndicator()
+								],
+							),
+						);
+						break;
 					
 					case ConnectionState.waiting :
+						print("WAINTING");
 						return Center(
 							child: Column(
 								children: <Widget>[
@@ -30,7 +44,7 @@ class _HomeState extends State<Home> {
 						);
 						break;
 						
-					case ConnectionState.done :
+					case ConnectionState.active :
 						QuerySnapshot querySnapshot = snapshot.data;
 						
 						if(snapshot.hasError) {
@@ -45,7 +59,6 @@ class _HomeState extends State<Home> {
 								child: ListView.builder(
 									itemCount: querySnapshot.documents.length,
 									itemBuilder: (context, index) {
-										
 										//recupera os animais
 										List<DocumentSnapshot> animais = querySnapshot.documents.toList();
 										DocumentSnapshot dados = animais[index];
@@ -63,6 +76,7 @@ class _HomeState extends State<Home> {
 								)
 							);
 						}
+						break;
 				}
 				
 			}
@@ -80,52 +94,81 @@ class _HomeState extends State<Home> {
 			
 			body: _body(),
 			
-			bottomNavigationBar: BottomAppBar(
-				//shape: const CircularNotchedRectangle(),
-				child: Container(
-					height: 50.0,
-					child: Row(
-						mainAxisSize: MainAxisSize.min,
-						mainAxisAlignment: MainAxisAlignment.spaceBetween,
-						
-						children: <Widget>[
-							IconButton(
-								padding: EdgeInsets.only(right: 20.0, left: 20.0),
-								color: Colors.blue,
-								icon: Icon(Icons.home),
-								onPressed: () {/* */}
-							),
-							
-							IconButton(
-								padding: EdgeInsets.only(right: 50.0, left: 50.0),
-								color: Colors.blue,
-								icon: Icon(Icons.pets),
-								onPressed: () {/* */}
-							),
-							
-							IconButton(
-								padding: EdgeInsets.only(right: 30.0, left: 30.0),
-								color: Colors.blue,
-								icon: Icon(Icons.person),
-								onPressed: () {/* */}
-							),
-							
-							IconButton(
-								padding: EdgeInsets.only(right: 20.0, left: 20.0),
-								color: Colors.blue,
-								icon: Icon(Icons.event),
-								onPressed: () {/* */}
-							),
-						],
-					),
-				),
-			),
+			bottomNavigationBar: MenuInferior(),
 			
 			floatingActionButton: FloatingActionButton(
-				onPressed: () {/* */},
+				onPressed: () {
+//						Navigator.push(context,
+//							MaterialPageRoute(
+//								builder: (context) => NovoPet()
+//							)
+//						);
+						//db.collection("animais").document("005").setData({"nome": "pompom"});
+					},
 				tooltip: 'Novo Pet',
 				child: Icon(Icons.add),
 			),
 		);
+	}
+	
+	final _formKey = GlobalKey<FormState>();
+	
+	
+	_novoPet() {
+		return showDialog(
+			context: context,
+			builder: (BuildContext context)
+			{
+				return AlertDialog(
+					content: Stack(
+						overflow: Overflow.visible,
+						children: <Widget>[
+							Positioned(
+								right: -40.0,
+								top: -40.0,
+								child: InkResponse(
+									onTap: () {
+										Navigator.of(context).pop();
+									},
+									child: CircleAvatar(
+										child: Icon(Icons.close),
+										backgroundColor: Colors.red,
+									),
+								),
+							),
+							Form(
+								key: _formKey,
+								child: Column(
+									mainAxisSize: MainAxisSize.min,
+									children: <Widget>[
+										Padding(
+											padding: EdgeInsets.all(8.0),
+											child: TextFormField(),
+										),
+										Padding(
+											padding: EdgeInsets.all(8.0),
+											child: TextFormField(),
+										),
+										Padding(
+											padding: const EdgeInsets.all(8.0),
+											child: RaisedButton(
+												child: Text("Submitß"),
+												onPressed: () {
+													if (_formKey.currentState
+														.validate()) {
+														_formKey.currentState
+															.save();
+													}
+												},
+											),
+										)
+									],
+								),
+							),
+						],
+					),
+				);
+			});
+		
 	}
 }
