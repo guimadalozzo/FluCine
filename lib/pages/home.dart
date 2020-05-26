@@ -12,6 +12,31 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 	Firestore db = Firestore.instance;
 	
+	@override
+	Widget build(BuildContext context) {
+		return Scaffold(
+			appBar: AppBar(
+				title: Text("Seus Pets"),
+			),
+			
+			body: _body(),
+			
+			bottomNavigationBar: MenuInferior(),
+			
+			floatingActionButton: FloatingActionButton(
+				onPressed: () {
+					Navigator.push(context,
+						MaterialPageRoute(
+							builder: (context) => NovoPet()
+						)
+					);
+				},
+				tooltip: 'Novo Pet',
+				child: Icon(Icons.add),
+			),
+		);
+	}
+	
 	_body() {
 		return StreamBuilder(
 			stream: db.collection("animais").snapshots(),
@@ -20,9 +45,8 @@ class _HomeState extends State<Home> {
 				switch( snapshot.connectionState ) {
 					case ConnectionState.none :
 					case ConnectionState.done :
-						
+					
 					case ConnectionState.waiting :
-						print("WAINTING");
 						return Center(
 							child: Column(
 								children: <Widget>[
@@ -32,7 +56,7 @@ class _HomeState extends State<Home> {
 							),
 						);
 						break;
-						
+					
 					case ConnectionState.active :
 						QuerySnapshot querySnapshot = snapshot.data;
 						
@@ -65,7 +89,6 @@ class _HomeState extends State<Home> {
 								)
 							);
 						}
-						break;
 				}
 				
 			}
@@ -74,90 +97,4 @@ class _HomeState extends State<Home> {
 		
 	}
 	
-	@override
-	Widget build(BuildContext context) {
-		return Scaffold(
-			appBar: AppBar(
-				title: Text("Seus Pets"),
-			),
-			
-			body: _body(),
-			
-			bottomNavigationBar: MenuInferior(),
-			
-			floatingActionButton: FloatingActionButton(
-				onPressed: () {
-//						Navigator.push(context,
-//							MaterialPageRoute(
-//								builder: (context) => NovoPet()
-//							)
-//						);
-						//db.collection("animais").document("005").setData({"nome": "pompom"});
-					},
-				tooltip: 'Novo Pet',
-				child: Icon(Icons.add),
-			),
-		);
-	}
-	
-	final _formKey = GlobalKey<FormState>();
-	
-	
-	_novoPet() {
-		return showDialog(
-			context: context,
-			builder: (BuildContext context)
-			{
-				return AlertDialog(
-					content: Stack(
-						overflow: Overflow.visible,
-						children: <Widget>[
-							Positioned(
-								right: -40.0,
-								top: -40.0,
-								child: InkResponse(
-									onTap: () {
-										Navigator.of(context).pop();
-									},
-									child: CircleAvatar(
-										child: Icon(Icons.close),
-										backgroundColor: Colors.red,
-									),
-								),
-							),
-							Form(
-								key: _formKey,
-								child: Column(
-									mainAxisSize: MainAxisSize.min,
-									children: <Widget>[
-										Padding(
-											padding: EdgeInsets.all(8.0),
-											child: TextFormField(),
-										),
-										Padding(
-											padding: EdgeInsets.all(8.0),
-											child: TextFormField(),
-										),
-										Padding(
-											padding: const EdgeInsets.all(8.0),
-											child: RaisedButton(
-												child: Text("Submitß"),
-												onPressed: () {
-													if (_formKey.currentState
-														.validate()) {
-														_formKey.currentState
-															.save();
-													}
-												},
-											),
-										)
-									],
-								),
-							),
-						],
-					),
-				);
-			});
-		
-	}
 }
