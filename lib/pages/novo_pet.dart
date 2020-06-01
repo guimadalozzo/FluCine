@@ -48,25 +48,25 @@ class NovoPet extends StatelessWidget {
 					children: <Widget>[
 						Padding(
 							padding: EdgeInsets.only(top: 40, left: 30, right: 30),
-							child:
-							TextField(
+							child: TextField(
+								obscureText: true,
 								decoration: InputDecoration(
 									border: new OutlineInputBorder(
 										borderRadius: const BorderRadius.all(
 											const Radius.circular(50.0),
 										),
 									),
-									contentPadding: new EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
-									
+									contentPadding:
+									new EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
 									filled: true,
 									fillColor: Colors.white,
-									
 									alignLabelWithHint: true,
-									hintText: 'Nome',
+									labelText: 'Nome',
 								),
 								keyboardType: TextInputType.text,
 							),
 						),
+						
 						
 						Padding(
 							padding: EdgeInsets.only(top: 20, left: 30, right: 30),
@@ -155,7 +155,7 @@ class NovoPet extends StatelessWidget {
 					),
 				),
 				color: Colors.blue,
-				onPressed: () {/*  */},
+				onPressed: () {/* */},
 			),
 		);
 	}
