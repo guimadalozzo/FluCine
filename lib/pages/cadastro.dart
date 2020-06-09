@@ -54,7 +54,7 @@ class _CadastroState extends State<Cadastro> {
 	}
 	
 	_cadastrar(Usuario usuario) {
-	
+		
 		FirebaseAuth auth = FirebaseAuth.instance;
 		auth.createUserWithEmailAndPassword(
 			email: usuario.email,
