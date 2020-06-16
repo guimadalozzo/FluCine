@@ -47,18 +47,19 @@ class _NovoPetState extends State<NovoPet> {
 	}
 	
 	Future _cadastrar() async {
-		String nome    = _nomeController.text;
+		String nome = _nomeController.text;
 		String especie = _especieController.text;
-		String raca    = _racaController.text;
-		String idade   = _idadeController.text;
+		String raca = _racaController.text;
+		String idade = _idadeController.text;
 		
 		String new_pet;
 		FirebaseUser user;
 		
-		await FirebaseAuth.instance.currentUser().then((currentUser) => {
-			if (currentUser != null) {
-				user = currentUser
-			}
+		String link_foto = "";
+		
+		await FirebaseAuth.instance.currentUser().then((currentUser) =>
+		{
+			if (currentUser != null) user = currentUser
 		});
 		
 		await Firestore.instance
@@ -66,20 +67,35 @@ class _NovoPetState extends State<NovoPet> {
 			.document("pets")
 			.collection("pets")
 			.add({
-				"nome": nome,
-				"especie": especie,
-				"idade": idade,
-				"raca": raca,
-			}).then((value){
-				new_pet = value.documentID;
+			"nome": nome,
+			"especie": especie,
+			"idade": idade,
+			"raca": raca,
+			"foto": ""
+		}).then((value) {
+			new_pet = value.documentID;
+		});
+		
+		if (_foto != "") {
+			FirebaseStorage storage = FirebaseStorage.instance;
+			StorageReference rootFolder = storage.ref();
+			StorageReference arquivo = rootFolder.child("pets_avatar").child(
+				user.uid).child(new_pet);
+			
+			StorageUploadTask task = arquivo.putFile(_foto);
+			await task.onComplete.then((StorageTaskSnapshot snapshot) async {
+				link_foto = await snapshot.ref.getDownloadURL();
 			});
-		
-		print("ID DOC: "+new_pet);
-		
-		FirebaseStorage storage = FirebaseStorage.instance;
-		StorageReference rootFolder = storage.ref();
-		StorageReference arquivo = rootFolder.child("pets_avatar").child(user.uid).child(new_pet);
-		arquivo.putFile(_foto);
+			
+			await Firestore.instance
+				.collection(user.uid)
+				.document("pets")
+				.collection("pets")
+				.document(new_pet)
+				.updateData({
+				'foto': link_foto
+			});
+		}
 	}
 	
 	@override
@@ -100,10 +116,6 @@ class _NovoPetState extends State<NovoPet> {
 						child: _addPhoto(),
 					),
 					Align(
-						alignment: Alignment.bottomCenter,
-						child: _action(),
-					),
-					Align(
 						alignment: Alignment.topLeft,
 						child: _backBtn(context),
 					),
@@ -114,6 +126,10 @@ class _NovoPetState extends State<NovoPet> {
 					Align(
 						alignment: Alignment.bottomCenter,
 						child: _content(),
+					),
+					Align(
+						alignment: Alignment.bottomCenter,
+						child: _action(),
 					),
 				],
 			),
@@ -299,6 +315,7 @@ class _NovoPetState extends State<NovoPet> {
 				color: Colors.blue,
 				onPressed: () {
 					_validacao();
+					Navigator.pop(context);
 				},
 			),
 		);

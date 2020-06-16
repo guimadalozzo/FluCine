@@ -3,6 +3,8 @@ import 'package:controle_animal/pages/novo_pet.dart';
 import 'package:flutter/material.dart';
 import 'package:controle_animal/model/Animal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class Home extends StatefulWidget {
 	@override
@@ -11,9 +13,22 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 	Firestore db = Firestore.instance;
+	String user;
+
+	String _getUser() {
+		FirebaseAuth.instance.currentUser().then((currentUser) =>
+		{
+			if (currentUser != "") {
+				user = currentUser.uid,
+			}
+		});
+		print("USER:: "+user);
+		return user;
+	}
 	
 	@override
 	Widget build(BuildContext context) {
+		
 		return Scaffold(
 			appBar: AppBar(title: Text("Seus Pets")),
 			
@@ -37,7 +52,7 @@ class _HomeState extends State<Home> {
 	
 	_body() {
 		return StreamBuilder(
-			stream: db.collection("animais").snapshots(),
+			stream: db.collection(_getUser()).document("pets").collection("pets").snapshots(),
 // ignore: missing_return
 			builder: (context, snapshot) {
 				switch( snapshot.connectionState ) {
